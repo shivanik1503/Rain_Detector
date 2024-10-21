@@ -1,0 +1,60 @@
+Rain detector_code
+
+#include <Servo.h>
+#include <ESP8266WiFi.h>
+// WiFi credentials
+const char* ssid = "AB TECH VILLE";
+const char* password = "Sravya@7888";
+
+
+// Define the GPIO pin for the rain detector sensor
+const int rainDetectorPin = A0; // GPIO5 (D1)
+// Define the GPIO pin for the buzzer
+const int buzzerPin = D2; // GPIO4 (D2)
+// Define the threshold value for rain detection
+const int rainThreshold = 500; // Adjust the threshold value as needed
+Servo servo;
+
+
+void setup() {
+Serial.begin(9600);
+// Connect to WiFi
+WiFi.begin(ssid, password);
+while (WiFi.status() != WL_CONNECTED) {
+delay(1000);
+Serial.println("Connecting to WiFi...");
+}
+Serial.println("Connected to WiFi");
+// Initialize rain detector pin as input
+pinMode(rainDetectorPin, INPUT);
+// Initialize buzzer pin as output
+pinMode(buzzerPin, OUTPUT);
+servo.attach(D8);
+servo.write(0);
+}
+
+
+void loop() {
+// Read the analog value from the rain detector sensor
+int rainValue = analogRead(rainDetectorPin);
+// Print the analog value (for testing purposes)
+Serial.print("Rain Value: ");
+Serial.println(rainValue);
+// Check if rain value exceeds the threshold
+if (rainValue > rainThreshold) {
+// Rain detected, sound the buzzer
+Serial.println("Rain detected! Sounding the buzzer.");
+tone(buzzerPin, 1000); // Set buzzer frequency to 1000Hz
+delay(1000); // Buzzer sound duration (adjust as needed)
+tone(buzzerPin, HIGH);  
+servo.write(180);
+//tone(buzzerPin); // Stop buzzer sound
+}
+else {
+// No rain detected
+Serial.println("No rain detected.");
+noTone(buzzerPin); // Ensure buzzer is off
+servo.write(0);  
+}
+delay(1000); // Adjust delay as needed
+}
